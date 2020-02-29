@@ -2,22 +2,52 @@ const express = require("express");
 const app = express();
 const port = process.env.PORT || 3001;
 
+app.use(express.json());
+
+const courses = [
+  { id: 1, name: "course1" },
+  { id: 2, name: "course2" },
+  { id: 3, name: "course3" }
+];
+
 app.get("/", (req, res) => {
   res.send("Hello CRUD!");
 });
 
+app.get("/courses", (req, res) => {
+  res.send(courses);
+});
+
+app.post("/courses", (req, res) => {
+  let course = {
+    id: courses.length + 1,
+    name: req.body.name
+  };
+  courses.push(course);
+  res.send(courses);
+});
+
 app.get("/courses/:id", (req, res) => {
-  res.send(req.params.id);
+  //reqのparamsはstring情報なのでint型にparseする。
+  let course = courses.find(e => e.id === parseInt(req.params.id));
+  if (!course) {
+    res.send("該当コースないで！");
+  }
+  res.send(course);
 });
 
-app.get("/:year/:month", (req, res) => {
-  res.send(`${req.params.year}年の${req.params.month}月の記事です。`);
-});
+// app.get("/courses/:id", (req, res) => {
+//   res.send(req.params.id);
+// });
 
-app.get("/jsonGet", (req, res) => {
-  //queryStringもjson形式で取得できる
-  res.send(req.query);
-});
+// app.get("/:year/:month", (req, res) => {
+//   res.send(`${req.params.year}年の${req.params.month}月の記事です。`);
+// });
+
+// app.get("/jsonGet", (req, res) => {
+//   //queryStringもjson形式で取得できる
+//   res.send(req.query);
+// });
 
 //実際にwebで叩く場合うまくいかな場合があるのでportをprocess.env.PORTで行う。
 app.listen(port, () => {
