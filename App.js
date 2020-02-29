@@ -2,6 +2,7 @@ const express = require("express");
 const app = express();
 const port = process.env.PORT || 3001;
 const bodyParser = require("body-parser");
+const Joi = require("@hapi/joi");
 
 app.use(express.json());
 //body-parser middlewareを使得るようにする
@@ -22,6 +23,19 @@ app.get("/courses", (req, res) => {
 });
 
 app.post("/courses", (req, res) => {
+  //dataの形式を決定するもの
+  const schema = Joi.object({
+    name: Joi.string()
+      .min(3)
+      .required()
+  });
+  const result = schema.validate(req.body);
+  //validate()の戻り値はオブジェクト
+  //postmanにerrorの時messageを吐かせる。
+  if (result.error) {
+    res.send(result.error.details[0].message);
+  }
+
   let course = {
     id: courses.length + 1,
     name: req.body.name
@@ -38,6 +52,9 @@ app.get("/courses/:id", (req, res) => {
   }
   res.send(course);
 });
+
+// putで更新処理
+app.put();
 
 // app.get("/courses/:id", (req, res) => {
 //   res.send(req.params.id);
