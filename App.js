@@ -1,8 +1,11 @@
 const express = require("express");
 const app = express();
 const port = process.env.PORT || 3001;
+const bodyParser = require("body-parser");
 
 app.use(express.json());
+//body-parser middlewareを使得るようにする
+app.use(bodyParser.urlencoded({ extended: true }));
 
 const courses = [
   { id: 1, name: "course1" },
