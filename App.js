@@ -1,5 +1,7 @@
+// エントリーファイル
 const express = require("express");
 const app = express();
+const router = require("./routes/routes");
 
 const port = process.env.PORT || 3001;
 const bodyParser = require("body-parser");
@@ -11,6 +13,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.get("/", (req, res) => {
   res.send("Hello CRUD!");
 });
+
+app.use("/courses", router);
 
 // app.get("/:year/:month", (req, res) => {
 //   res.send(`${req.params.year}年の${req.params.month}月の記事です。`);

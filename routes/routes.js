@@ -8,11 +8,11 @@ const courses = [
   { id: 3, name: "course3" }
 ];
 
-router.get("/courses", (req, res) => {
+router.get("/", (req, res) => {
   res.send(courses);
 });
 
-router.post("/courses", (req, res) => {
+router.post("/", (req, res) => {
   //dataの形式を決定するもの
   const schema = Joi.object({
     name: Joi.string()
@@ -34,13 +34,13 @@ router.post("/courses", (req, res) => {
   res.send(courses);
 });
 
-router.get("/courses/:id", (req, res) => {
+router.get("/:id", (req, res) => {
   const course = searchData(req.params.id);
   res.send(course);
 });
 
 // putで更新処理
-router.put("/courses/:id", (req, res) => {
+router.put("/:id", (req, res) => {
   //1.データ(course)を探す
   searchData(req.params.id);
   //2.バリデーションする
