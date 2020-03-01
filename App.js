@@ -45,16 +45,64 @@ app.post("/courses", (req, res) => {
 });
 
 app.get("/courses/:id", (req, res) => {
-  //reqのparamsはstring情報なのでint型にparseする。
-  let course = courses.find(e => e.id === parseInt(req.params.id));
-  if (!course) {
-    res.send("該当コースないで！");
-  }
+  const course = searchData(req.params.id);
   res.send(course);
 });
 
 // putで更新処理
-app.put();
+app.put("/courses/:id", (req, res) => {
+  //1.データ(course)を探す
+  searchData(req.params.id);
+  //2.バリデーションする
+  //   validate()の実態はエラー時
+  //   { value: { name: 'aaa', aaa: 'aaaa' },
+  //     error: [Error [ValidationError]: "aaa" is not allowed] {
+  //     _original: { name: 'aaa', aaa: 'aaaa' },
+  //     details: [ [Object] ]
+  //   }
+
+  let { error } = validate(req.body);
+  if (error) {
+    res.send(error.details[0].message);
+  }
+  //3.データを編集し、結果を返す。
+  courses.forEach(e => {
+    if (e.id === parseInt(req.params.id)) {
+      e.name = req.body.name;
+    }
+  });
+  res.send(courses);
+});
+
+// deleteで削除処理を行う
+app.delete("/courses/:id", (req, res) => {
+  //該当のdataがあるか検索
+  const course = searchData(req.params.id);
+  //該当dataを削除する
+  let index = courses.indexOf(course);
+  console.log(courses.splice(index, 1));
+  courses.splice(index, 1);
+  //結果を返す
+  res.send(courses);
+});
+
+function searchData(reqParamsId) {
+  //reqのparamsはstring情報なのでint型にparseする。
+  let course = courses.find(e => e.id === parseInt(reqParamsId));
+  if (!course) {
+    res.send("該当コースないで！");
+  }
+  return course;
+}
+
+function validate(course) {
+  const schema = Joi.object({
+    name: Joi.string()
+      .min(3)
+      .required()
+  });
+  return schema.validate(course);
+}
 
 // app.get("/courses/:id", (req, res) => {
 //   res.send(req.params.id);
